@@ -37,7 +37,11 @@ optional arguments:
 Web приложение:
 -----------------------
 
-Написано на Flask, запустить `flask_app.py`
+Состоит из приложения API и front-end
+
+API написано на Flask, front-end написан с использованием библиотеки knockout и datatables
+
+Для запуска установить `pip install -r requirements.txt` и запустить `flask_app.py`
 
 Перейти в браузере по ссылке `http://127.0.0.1:5000/`
 
