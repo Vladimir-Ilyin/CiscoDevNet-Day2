@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html class="h-100">
+<head>
+<meta charset="utf-8">
+<title>Поиск MAC адресов в сети</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+<script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha384-vk5WoKIaW/vJyUAd9n/wmopsmNhiy+L2Z+SBxGYnUkunIxVxAv/UtMOhba/xskxh" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.5.0/knockout-min.js"></script>
+
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap4.css">
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.js"></script>
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap4.js"></script>
+
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css">
+</head>
+<style type="text/css" media="screen">
+table#table_macs.table tbody tr:hover {
+    background-color: rgb(240, 240, 128);
+}
+</style>
+<body class="d-flex flex-column h-100">
+<header>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" href="#"><i class="fas fa-hdd"></i>&nbsp; Поиск MAC адресов в сети</a>
+</nav>
+</header>
+
+<main role="main" class="flex-shrink-0">
+<div id="main" class="container py-3">
+
+<div id="alerts-space" class="container">
+<!-- НАЧАЛО Алерт -->
+<!-- КОНЕЦ Алерт -->
+</div>
+
+</div>
+
+<div class="container">
+<!-- НАЧАЛО Основной контейнер -->
+
+<div class="row">
+<!-- НАЧАЛО первая строка контейнера -->
+
+<div id="find_mac" class="col py-3">
+<div class="card">
+<h5 class="card-header"><i class="fas fa-search"></i>&nbsp; <b>Поиск MAC адреса</b></h5>
+
+<div class="card-body">
+
+<form>
+<div class="form-group row justify-content-center">
+<div class="input-group col-7">
+    <div class="input-group-prepend">
+        <span class="input-group-text" id="basic-addon1"><i class="fas fa-search"></i>&nbsp; <b>MAC</b></span>
+    </div>
+    <input data-bind="value: mac_search" type="text" class="form-control col-4" id="mac_search" placeholder="aaa.bbb.ccc" aria-label="mac" aria-describedby="basic-addon1">
+    <select data-bind="value: mode" id="mode" class="form-control col-2">
+        <option selected>Все</option>
+        <option>access</option>
+        <option>trunk</option>
+      </select>
+    <button type="button" data-bind="click: search" class="btn btn-outline-primary"><i class="fas fa-search"></i>&nbsp; Поиск</button>
+</div>
+</div>
+</form>
+
+<table id="table_find_mac" class="table table-striped">
+<thead>
+    <tr>
+    <th class="searchable" style="width: 25%;"><b>Устройство</b></th>
+    <th class="searchable" style="width: 15%;"><b>Порт</b></th>
+    <th class="searchable" style="width: 15%;"><b>Режим</b></th>
+    <th class="searchable" style="width: 15%;"><b>Vlan</b></th>
+    <th class="searchable" style="width: 30%;"><b>MAC адрес</b></th>
+    </tr>
+</thead>
+<tbody data-bind="foreach: mac_find_table">
+    <tr data-bind="attr: { 'id' : 'mac_' + $index() }">
+        <td data-bind="text: SwitchName"></td>
+        <td data-bind="text: Port"></td>
+        <td data-bind="text: Mode"></td>
+        <td data-bind="text: Vlan"></td>
+        <td data-bind="text: MAC"></td>
+    </tr>
+</tbody>
+</table>
+</div>
+
+</div>
+</div>
+
+<!-- КОНЕЦ первая строка контейнера -->
+</div>
+
+<div class="row">
+<!-- НАЧАЛО вторая строка контейнера -->
+    
+<div id="macs" class="col py-3">
+<div class="card">
+<h5 class="card-header"><i class="fas fa-list"></i>&nbsp; <b>Список всех MAC адресов</b></h5>
+
+<div class="card-body">
+<table id="table_macs" class="table table-striped">
+<thead>
+    <tr>
+    <th class="searchable" style="width: 25%;"><b>Устройство</b></th>
+    <th class="searchable" style="width: 15%;"><b>Порт</b></th>
+    <th class="searchable" style="width: 15%;"><b>Режим</b></th>
+    <th class="searchable" style="width: 15%;"><b>Vlan</b></th>
+    <th class="searchable" style="width: 30%;"><b>MAC адрес</b></th>
+    </tr>
+</thead>
+<tbody data-bind="foreach: macs_table">
+    <tr data-bind="attr: { 'id' : 'mac_' + $index() }">
+        <td data-bind="text: SwitchName"></td>
+        <td data-bind="text: Port"></td>
+        <td data-bind="text: Mode"></td>
+        <td data-bind="text: Vlan"></td>
+        <td data-bind="text: MAC"></td>
+    </tr>
+</tbody>
+</table>
+</div>
+
+</div>
+</div>
+
+<!-- КОНЕЦ вторая строка контейнера -->
+</div>
+
+<!-- КОНЕЦ Основной контейнер -->
+</div>
+
+</main>
+
+<footer class="footer mt-auto py-3 bg-dark">
+    <div class="container">
+        <span class="text-muted">Поиск MAC адресов в сети. Cisco DevNet Марафон День 2. Апрель 2020.</span>
+    </div>
+</footer>
+
+<script type="text/javascript">
+    function ListMACViewModel() {
+        var self = this;
+
+        self.table = null;
+        self.tableName = '#table_macs';
+
+        self.macs_table = ko.observableArray();
+
+        self.BaseURI = 'http://127.0.0.1:5000/getmac/api/v1.0/macs';
+		
+        self.ajax = function(uri, method, data) {
+            var request = {
+                url: uri,
+                type: method,
+                contentType: "application/json",
+                accepts: "application/json",
+                cache: false,
+                dataType: 'json',
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("Accept", "application/json");
+                    xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+                },
+                error: function(jqXHR) {
+                    console.log("ajax error " + jqXHR.status);
+                    self.getAlertHTML('warning','<i class="fas fa-exclamation-triangle"></i>','Невозможно установить соединение. Код ошибки [ '+jqXHR.status+', '+jqXHR.statusText+' ].').appendTo( '#alerts-space' );
+                }
+            };
+            return $.ajax(request);
+        }
+        self.getAlertHTML = function ( type, text1, text2) {
+            var html = `
+<div class="alert alert-`+type+` alert-dismissible fade show d-print-none" role="alert">
+  <strong>`+text1+`</strong> `+text2+`
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>`
+            return $(html);
+        }
+
+        self.createDataTable = function () {
+			self.table = $(self.tableName).DataTable({
+                "sDom": 'lrtip',
+                "columnDefs": [ {
+                    //"targets": [ 0 ],
+                    //"visible": false,
+                    //"searchable": false
+                } ],
+                "oLanguage": {
+                    "sLengthMenu": "Показать _MENU_ записей",
+                    "sSearch": "Поиск:",
+                    "sInfo": "Отображено с _START_ по _END_ записей из _TOTAL_",
+                    "sInfoEmpty": "Нет записей для отображения",
+                    "sZeroRecords": "Нет записей для отображения",
+                    "sInfoFiltered": " - выбрано из _MAX_ записей",
+                    "oPaginate": {
+                        "sFirst": "Начало",
+                        "sNext": "Следующая",
+                        "sPrevious": "Предыдущая",
+                        "sLast": "Конец",
+                        },
+                    },
+                "pageLength": 5,
+                "lengthMenu": [ [5, 10, 25, 50, 100, -1], [5, 10, 25, 50, 100, "Все"] ],
+            });
+
+            // reset all search terms
+            self.table
+                .search('')
+                .columns().search('')
+                .draw();
+            // prevent sorting when clicking in the search field
+            $('.search_box').on('click', function (e) {
+                e.stopPropagation();
+            });
+            // add the search events
+            self.table.columns().every(function () {
+                var that = this;
+                $('input', this.header()).on('keyup change', function () {
+                    if (that.search() != this.value) {
+                        that
+                            .search(this.value)
+                            .draw();
+                    }
+                });
+            });
+            // get search parameter
+/*            function getParameterByName(name) {
+                var match = RegExp('[?&]' + name + '=([^&]*)').exec(window.location.search);
+                return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
+            }
+            var value = getParameterByName("search");
+            if (value) {
+                self.table.search(value).draw();
+            }
+*/
+        }
+
+        self.ajax(self.BaseURI, 'GET').then(function(data) {
+            for (var i = 0; i < data.data.length; i++) {
+                self.macs_table.push( {
+                    SwitchName: ko.observable(data.data[i].SwitchName),
+                    Port: ko.observable(data.data[i].Port),
+                    Mode: ko.observable(data.data[i].Mode),
+                    Vlan: ko.observable(data.data[i].Vlan),
+                    MAC: ko.observable(data.data[i].MAC)
+                });
+            }
+            self.createDataTable();
+        }, function(data) {
+            console.log("error: " + JSON.stringify(data));
+            self.getAlertHTML('warning','<i class="fas fa-exclamation-triangle"></i>','Обновите страницу. <a href="#" class="alert-link" onClick="window.location.reload(true);"><i class="fas fa-sync-alt"></i> Обновить</a>').appendTo( '#alerts-space' );
+            } );
+
+    }
+
+    function FindMACViewModel() {
+        var self = this;
+
+        self.table = null;
+        self.tableName = '#table_find_mac';
+
+        self.mac_find_table = ko.observableArray();
+        self.mac_search = ko.observable();
+        self.mode = ko.observable('Все');
+
+        self.BaseURI = 'http://127.0.0.1:5000/getmac/api/v1.0/mac/';
+
+        self.ajax = function(uri, method, data) {
+            var request = {
+                url: uri,
+                type: method,
+                contentType: "application/json",
+                accepts: "application/json",
+                cache: false,
+                dataType: 'json',
+                data: data,
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("Accept", "application/json");
+                    xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+                },
+                error: function(jqXHR) {
+                    console.log("ajax error " + jqXHR.status);
+                    self.getAlertHTML('warning','<i class="fas fa-exclamation-triangle"></i>','Невозможно установить соединение. Код ошибки [ '+jqXHR.status+', '+jqXHR.statusText+' ].').appendTo( '#alerts-space' );
+                }
+            };
+            return $.ajax(request);
+        }
+        self.getAlertHTML = function ( type, text1, text2) {
+            var html = `
+<div class="alert alert-`+type+` alert-dismissible fade show d-print-none" role="alert">
+  <strong>`+text1+`</strong> `+text2+`
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>`
+            return $(html);
+        }
+
+        self.search = function() {
+            self.mac_find_table.removeAll();
+            if (self.mode() == 'Все') {
+                mode = null
+            } else {
+                mode = { mode: self.mode() }
+            }
+            self.ajax(self.BaseURI + self.mac_search(), 'GET', mode).then(function(data) {
+                self.mac_find_table.removeAll();
+                for (var i = 0; i < data.data.length; i++) {
+                    self.mac_find_table.push( {
+                        SwitchName: ko.observable(data.data[i].SwitchName),
+                        Port: ko.observable(data.data[i].Port),
+                        Mode: ko.observable(data.data[i].Mode),
+                        Vlan: ko.observable(data.data[i].Vlan),
+                        MAC: ko.observable(data.data[i].MAC)
+                    });
+                }
+            }, function(data) {
+                console.log("error: " + JSON.stringify(data));
+                self.getAlertHTML('warning','<i class="fas fa-exclamation-triangle"></i>','Обновите страницу. <a href="#" class="alert-link" onClick="window.location.reload(true);"><i class="fas fa-sync-alt"></i> Обновить</a>').appendTo( '#alerts-space' );
+                } );
+        }
+
+    }
+
+    var MyListMACViewModel = new ListMACViewModel();
+    var MyFindMACViewModel = new FindMACViewModel();
+
+    ko.applyBindings(MyListMACViewModel, $('#macs')[0]);
+    ko.applyBindings(MyFindMACViewModel, $('#find_mac')[0]);
+
+	$(document).ready( function () {
+        // attach search input fields
+        $('#table_macs thead th').each(function () {
+            var title = $(this).text();
+            if($(this).hasClass("searchable")) {
+                $(this).html(
+                    $(this).html() + 
+                    '<span class="hidden-xs"><input id="column_search_' + title + '" class="form-control form-control-sm search_box" type="text" placeholder="Поиск по '+ title + '" /></span>'
+            );
+            }
+        });
+	} );
+
+</script>
+
+</body>
+</html>

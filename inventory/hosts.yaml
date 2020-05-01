@@ -1,0 +1,14 @@
+SW-SEG-LAB-CORE:
+  hostname: 10.200.128.1
+  groups:
+    - catalyst
+  data:
+    tags:
+      - ios
+#N5K-C5548UP-FA:
+#  hostname: 10.200.128.5
+#  groups:
+#    - nexus
+#  data:
+#    tags:
+#      - nx_os
