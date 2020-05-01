@@ -2,8 +2,4 @@
 * text=auto
 
 # Improve accuracy of GitHub's Linguist-powered language statistics
-<<<<<<< HEAD
 static/* linguist-vendored
-=======
-static/* linguist-vendored
->>>>>>> 9f0d8a113877d09e6cbfb867c793b7d4f6c3ff98
