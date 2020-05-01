@@ -17,7 +17,7 @@ def find_mac(ft, val, mode='access'):
     # Поиск заданного MAC в полной таблице, возврат всех найденных записей MAC удовлетворяющих условию поиска
     result = []
     for record in ft:
-        if record['destination_address'] == val and (mode in record.get('mode', 'UNDEFINED')):
+        if record['destination_address'].lower() == val.lower() and (mode in record.get('mode', 'UNDEFINED')):
             result.append(record)
     return result
 
