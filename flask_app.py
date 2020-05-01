@@ -10,7 +10,7 @@ from flask import request
 from app_find_mac import gather_info, find_mac
 
 app = Flask(__name__)
-CORS(app)
+cors = CORS(app, resources={r"/getmac/api/*": {"origins": "*"}})
 
 @app.errorhandler(404)
 def not_found(error):
